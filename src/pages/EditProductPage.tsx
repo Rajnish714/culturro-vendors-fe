@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchProductById, updateProduct } from '../hooks/request';
+import { useProductStore } from '../store/useProductStore';
+import { Product } from '../types'; // Import Product type
 import ProductForm from '../components/ProductForm';
 import styled from 'styled-components';
 
@@ -9,42 +11,59 @@ const Container = styled.div`
 `;
 
 const EditProductPage: React.FC = () => {
+  const fetchProductById = useProductStore((state) => state.fetchProductById);
+  const updateProduct = useProductStore((state) => state.updateProduct);
+  const products = useProductStore((state) => state.products);
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
-  const [product, setProduct] = useState({
-    name: '',
-    description: '',
-    category: '',
-    stockQuantity: 0,
-    price: 0
-  });
-
+  const [product, setProduct] = useState<Product | null>(null); // Initially null to indicate loading state
+  
+  useEffect(() => { // Find the product from the existing list 
+    const selectedProduct = products.find((p) => p.id === productId);
+  if (selectedProduct) { setProduct(selectedProduct);
+}
+ else { console.error('Product not found in the store'); } }
+  ,[productId, products]);
+  
   useEffect(() => {
+  
+   
+    
+    
     const getProduct = async () => {
       try {
         const productData = await fetchProductById(productId!);
-        setProduct(productData);
+        if (productData) {
+          setProduct(productData);
+        } else {
+          console.error('Product not found');
+        }
       } catch (error) {
         console.error('Error fetching product:', error);
       }
     };
 
     getProduct();
-  }, [productId]);
+    
+  }, [productId, fetchProductById ]);
 
-  const handleSubmit = useCallback(async (updatedProduct: any) => {
+  const handleSubmit = useCallback(async (updatedProduct: Product) => {
     try {
       await updateProduct(productId!, updatedProduct);
       navigate('/');
     } catch (error) {
       console.error('Error updating product:', error);
     }
-  }, [productId, navigate]);
+  }, [productId, updateProduct, navigate]);
 
   return (
     <Container>
       <h2>Edit Product</h2>
-      <ProductForm initialValues={product} onSubmit={handleSubmit} />
+      {product ? (
+        <ProductForm initialValues={product} onSubmit={handleSubmit} />
+      ) : (
+        <p>Loading...</p>
+      )}
     </Container>
   );
 };
@@ -52,8 +71,11 @@ const EditProductPage: React.FC = () => {
 export default EditProductPage;
 
 
-// import React from 'react';
-// import { useParams } from 'react-router-dom';
+
+// import React, { useState, useEffect, useCallback } from 'react';
+// import { useParams, useNavigate } from 'react-router-dom';
+// import { useProductStore } from '../store/useProductStore';
+// import { Product } from '../types'; // Import Product type
 // import ProductForm from '../components/ProductForm';
 // import styled from 'styled-components';
 
@@ -61,14 +83,55 @@ export default EditProductPage;
 //   padding: 2rem;
 // `;
 
-
 // const EditProductPage: React.FC = () => {
-//   const { productId } = useParams<{ productId: string }>();
+//   const fetchProductById = useProductStore((state) => state.fetchProductById);
+//   const updateProduct = useProductStore((state) => state.updateProduct);
+//   const { productId } = useParams<{ productId: string, }>();
+ 
+//   const navigate = useNavigate();
+//   const [product, setProduct] = useState<Product>({
+//     id: '',
+//     name: '',
+//     description: '',
+//     category: '',
+//     stockQuantity: 0,
+//     price: 0
+//   });
+
+//   useEffect(() => {
+   
+//     const getProduct = async () => {
+//       try {
+//         const productData = await fetchProductById(productId!);
+      
+        
+        
+//         if (productData) {
+//           setProduct(productData);
+//         } else {
+//           console.error('Product not found');
+//         }
+//       } catch (error) {
+//         console.error('Error fetching product:', error);
+//       }
+//     };
+
+//     getProduct();
+//   }, [productId, fetchProductById]);
+
+//   const handleSubmit = useCallback(async (updatedProduct: Product) => {
+//     try {
+//       await updateProduct(productId!, updatedProduct);
+//       navigate('/');
+//     } catch (error) {
+//       console.error('Error updating product:', error);
+//     }
+//   }, [productId, updateProduct, navigate]);
 
 //   return (
 //     <Container>
 //       <h2>Edit Product</h2>
-//       <ProductForm productId={productId} />
+//       <ProductForm initialValues={product} onSubmit={handleSubmit} />
 //     </Container>
 //   );
 // };
@@ -77,52 +140,5 @@ export default EditProductPage;
 
 
 
-// import React from 'react';
-// import styled from 'styled-components';
-// import { useParams } from 'react-router-dom';
 
-// const Container = styled.div`
-//   padding: 2rem;
-// `;
 
-// const EditProductPage: React.FC = () => {
-//   const { productId } = useParams<{ productId: string }>();
-
-//   // Fetch the product data using the productId
-
-//   return (
-//     <Container>
-//       <h2>Edit Product</h2>
-//       {/* Include the ProductForm component here with fetched product data */}
-//       <ProductForm productId={productId} />
-//     </Container>
-//   );
-// };
-
-// const ProductForm: React.FC<{ productId?: string }> = ({ productId }) => {
-//   // Implement the form to edit a product
-//   return (
-//     <form>
-//       {/* Form fields with prefilled data for editing go here */}
-//       <div>
-//         <label>Product Name:</label>
-//         <input type="text" name="productName" defaultValue="Product Name" />
-//       </div>
-//       <div>
-//         <label>Category:</label>
-//         <input type="text" name="category" defaultValue="Category" />
-//       </div>
-//       <div>
-//         <label>Quantity:</label>
-//         <input type="number" name="quantity" defaultValue={10} />
-//       </div>
-//       <div>
-//         <label>Price:</label>
-//         <input type="number" name="price" defaultValue={100} />
-//       </div>
-//       <button type="submit">Submit</button>
-//     </form>
-//   );
-// };
-
-// export default EditProductPage;

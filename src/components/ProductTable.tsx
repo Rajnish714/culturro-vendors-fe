@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { device } from '../styles/breakpoints'; // Import breakpoints
 import { useNavigate } from 'react-router-dom';
+import { Product } from '../types';
+import { useProductStore } from '../store/useProductStore';
 
 const Table = styled.table`
   width: 100%;
@@ -45,17 +47,7 @@ const Td = styled.td`
   }
 `;
 
-
-interface Product {
-    id: number;
-    name: string;
-    description:string;
-    category: string;
-    stockQuantity: number;
-    price: number;
-  }
-  
-  interface ProductTableProps {
+    interface ProductTableProps {
     products: Product[];
   }
   
@@ -63,8 +55,14 @@ interface Product {
 
 
 const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
+  const { deleteProduct } = useProductStore();
   const navigate = useNavigate();
   const handleEditClick = (productId: string) => { navigate(`/edit-product/${productId}`); };
+ 
+  const handleDeleteClick = async (productId: string) => {
+     try { 
+      await deleteProduct(productId); }
+      catch (error) { console.error('Error deleting product:', error); } };
   return (
     <Table>
       <thead>
@@ -91,7 +89,8 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
             <Td>{product.stockQuantity}</Td>
             <Td>{product.price}</Td>
             <Td><button onClick={() => handleEditClick(product.id.toString())}>Edit</button></Td>
-            <Td><button>Delete</button></Td>
+            {/* <Td><button onClick={() => handleDeleteClick(product.id.toString())}>Delete</button></Td> */}
+            <Td><button onClick={() => handleDeleteClick(product.id)}>Delete</button></Td>
           </tr>
         ))}
       </tbody>
@@ -103,61 +102,5 @@ export default ProductTable;
 
 
 
-// import React from 'react';
-// import styled from 'styled-components';
 
-// const Table = styled.table`
-//   width: 100%;
-//   border-collapse: collapse;
-//   margin: 1rem 0;
-// `;
-
-// const Th = styled.th`
-//   background-color: #f4f4f4;
-//   padding: 0.5rem;
-//   border: 1px solid #ddd;
-// `;
-
-// const Td = styled.td`
-//   padding: 0.5rem;
-//   border: 1px solid #ddd;
-// `;
-
-// const ProductTable: React.FC = () => {
-//   const products = [
-//     { id: 1, name: 'Product 1', category: 'Category 1', quantity: 10, price: 100 },
-//     // Add more products here
-//   ];
-
-//   return (
-//     <Table>
-//       <thead>
-//         <tr>
-//           <Th>S.no</Th>
-//           <Th>Product name</Th>
-//           <Th>Category</Th>
-//           <Th>Quantity</Th>
-//           <Th>Price</Th>
-//           <Th>Edit</Th>
-//           <Th>Delete</Th>
-//         </tr>
-//       </thead>
-//       <tbody>
-//         {products.map((product, index) => (
-//           <tr key={product.id}>
-//             <Td>{index + 1}</Td>
-//             <Td>{product.name}</Td>
-//             <Td>{product.category}</Td>
-//             <Td>{product.quantity}</Td>
-//             <Td>{product.price}</Td>
-//             <Td><button>Edit</button></Td>
-//             <Td><button>Delete</button></Td>
-//           </tr>
-//         ))}
-//       </tbody>
-//     </Table>
-//   );
-// };
-
-// export default ProductTable;
 

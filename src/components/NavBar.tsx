@@ -73,8 +73,9 @@ const NavBar: React.FC = () => {
     <Nav isFullScreen={isFullScreen}>
       {!isFullScreen && (
         <>
-          <NavLink to="/">Home</NavLink>
-          <NavLink to="/addProduct">Add Product</NavLink>
+          <NavLink to="/">Deshboard</NavLink>
+       
+          <NavLink to="/login">login</NavLink>
           <NavLink to="#" onClick={handleAboutClick}>About</NavLink>
         </>
       )}

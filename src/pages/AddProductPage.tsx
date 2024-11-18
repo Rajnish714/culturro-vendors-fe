@@ -1,17 +1,19 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductForm from '../components/ProductForm';
-import { addProduct } from '../hooks/request';
+import { useProductStore } from '../store/useProductStore';
 import styled from 'styled-components';
+import { Product } from '../types';
 
 const Container = styled.div`
   padding: 2rem;
 `;
 
 const AddProductPage: React.FC = () => {
+  const { addProduct } = useProductStore();
   const navigate = useNavigate();
 
-  const handleSubmit = async (productData: any) => {
+  const handleSubmit = async (productData: Product) => {
     try {
       await addProduct(productData);
       navigate('/');
@@ -20,15 +22,60 @@ const AddProductPage: React.FC = () => {
     }
   };
 
+  // Define initial values for a new product
+  const initialValues: Product = {
+    id: '', // This will be set by the backend
+    name: '',
+    description: '',
+    category: '',
+    stockQuantity: 0,
+    price: 0
+  };
+
   return (
     <Container>
       <h2>Add Product</h2>
-      <ProductForm onSubmit={handleSubmit} />
+      <ProductForm initialValues={initialValues} onSubmit={handleSubmit} />
     </Container>
   );
 };
 
 export default AddProductPage;
+
+
+// import React from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import ProductForm from '../components/ProductForm';
+// import { useProductStore } from '../store/useProductStore';
+// import styled from 'styled-components';
+// import { Product } from '../types';
+
+// const Container = styled.div`
+//   padding: 2rem;
+// `;
+
+// const AddProductPage: React.FC = () => {
+//   const {addProduct}=useProductStore()
+//   const navigate = useNavigate();
+
+//   const handleSubmit = async (productData: any) => {
+//     try {
+//       await addProduct(productData);
+//       navigate('/');
+//     } catch (error) {
+//       console.error('Error adding product:', error);
+//     }
+//   };
+
+//   return (
+//     <Container>
+//       <h2>Add Product</h2>
+//       <ProductForm onSubmit={handleSubmit} />
+//     </Container>
+//   );
+// };
+
+// export default AddProductPage;
 
 
 // import React from 'react';
