@@ -1,33 +1,27 @@
-import React, {useEffect, useCallback} from "react";
+import React, {useEffect} from "react";
+
 import ProductTable from "../components/ProductTable";
-import {useProductStore} from "../store/useProductStore";
-import {useLogin} from "../hooks/AuthHooks";
+
+import {useProducts} from "../hooks/ProductHooks";
+import AddProductButton from "../components/AddProductButton";
 
 const Home: React.FC = () => {
-  const products = useProductStore((state) => state.products);
-  const {loginState} = useLogin();
-  const fetchProducts = useProductStore((state) => state.fetchProducts);
-
-  const getProducts = useCallback(async () => {
-    await fetchProducts();
-  }, [fetchProducts]);
+  const {fetchProducts, products} = useProducts();
 
   useEffect(() => {
-    getProducts();
-  }, [getProducts]);
+    fetchProducts();
+  }, []);
 
   return (
-    <div>
-      <h2>Products</h2>
-      <div>
-        {loginState && (
-          <div>
-            <p>Welcome, {}</p>
-            <p>Email: {}</p>
-          </div>
-        )}
+    <div className="dash">
+      <div className="productheader">
+        <h2>Products</h2>
+        <AddProductButton />
       </div>
-      <ProductTable products={products} />
+
+      <div className="producttable">
+        <ProductTable products={products} />
+      </div>
     </div>
   );
 };

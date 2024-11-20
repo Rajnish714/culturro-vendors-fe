@@ -1,39 +1,38 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
-import { device } from '../styles/breakpoints'; // Import breakpoints
+import React, {useEffect} from "react";
+import {Link, useLocation, Navigate} from "react-router-dom";
+import styled from "styled-components";
+import {device} from "../styles/breakpoints";
+import {useAuthStore} from "../store/useAuthStore";
 
-const Nav = styled.nav<{ isFullScreen: boolean }>`
-  background-color: #333;
-  color: #fff;
-  padding: 1rem;
+const Nav = styled.nav`
   display: flex;
+  color: white;
+  background-color: #333;
+  text-align: center;
+  align-items: center;
+  padding: 0 1rem;
   justify-content: space-between;
-  flex-direction: ${({ isFullScreen }) => (isFullScreen ? 'column' : 'row')};
-  position: ${({ isFullScreen }) => (isFullScreen ? 'fixed' : 'relative')};
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: ${({ isFullScreen }) => (isFullScreen ? '100vh' : 'auto')};
-  z-index: 1000;
-  animation: ${({ isFullScreen }) => (isFullScreen ? 'slideDown 0.5s forwards' : 'slideUp 0.5s forwards')};
+  font-family: 'Roboto', sans-serif; 
 
   @media ${device.mobileS} {
     flex-direction: column;
   }
 
   @media ${device.tablet} {
-    flex-direction: ${({ isFullScreen }) => (isFullScreen ? 'column' : 'row')};
+    flex-direction: row;
   }
 `;
 
-const NavLink = styled(Link)`
-  color: #fff;
+const DashboardLink = styled(Link)`
+  color: white;
   text-decoration: none;
-  margin-right: 1rem;
+
+  border-radius: 4px;
+
+  font-weight: 700;
 
   &:hover {
-    text-decoration: underline;
+    color: #ddd; 
   }
 
   @media ${device.mobileS} {
@@ -45,131 +44,80 @@ const NavLink = styled(Link)`
   }
 `;
 
-const CloseButton = styled.button`
-  background-color: #d9534f;
-  color: #fff;
-  border: none;
+const NavLink = styled(Link)`
+  color: white;
+  text-decoration: none;
   padding: 0.5rem 1rem;
-  cursor: pointer;
-  align-self: flex-end;
+  border-radius: 4px;
+  margin: 0 0.5rem;
+  font-weight: 700;
 
   &:hover {
-    background-color: #c9302c;
+    background-color: #0056b3; 
+  }
+
+  @media ${device.mobileS} {
+    margin-bottom: 1rem;
+  }
+
+  @media ${device.tablet} {
+    margin-bottom: 0;
   }
 `;
 
-const NavBar: React.FC = () => {
-  const [isFullScreen, setIsFullScreen] = useState(false);
+const BlueNavLink = styled(NavLink)`
+  background-color: #007bff;
+`;
 
-  const handleAboutClick = () => {
-    setIsFullScreen(true);
-  };
+const RedButton = styled.button`
+  
+  color: #fff;
+  background-color: #dc3545; 
+  border-color: #dc3545;
+  cursor: pointer;
+  padding: 0.2rem 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin: 0 0.5rem;
+  font-weight: 700;
 
-  const handleCloseClick = () => {
-    setIsFullScreen(false);
+  &:hover {
+   color: #fff;
+  background-color: #c82333; 
+  border-color: #bd2130;
+  }
+`;
+
+type NavBarProps = {isAuthenticated: () => boolean};
+const NavBar: React.FC<NavBarProps> = ({isAuthenticated}) => {
+  const {logout} = useAuthStore();
+  const location = useLocation();
+  const {vendor} = useAuthStore();
+
+  useEffect(() => {}, [location, vendor]);
+
+  const handleLogoutClick = () => {
+    logout();
+    <Navigate to="/login" replace />;
   };
 
   return (
-    <Nav isFullScreen={isFullScreen}>
-      {!isFullScreen && (
-        <>
-          <NavLink to="/">Deshboard</NavLink>
-       
-          <NavLink to="/login">login</NavLink>
-          <NavLink to="#" onClick={handleAboutClick}>About</NavLink>
-        </>
+    <Nav>
+      <DashboardLink to="/">
+        <h3>Dashboard</h3>
+      </DashboardLink>
+
+      {vendor ? <h3 style={{margin: "0 0.5rem"}}>{vendor.name}</h3> : ""}
+
+      {isAuthenticated() ? (
+        <RedButton onClick={handleLogoutClick}>Logout</RedButton>
+      ) : location.pathname === "/login" ? (
+        <BlueNavLink to="/signup">SignUp</BlueNavLink>
+      ) : (
+        <BlueNavLink to="/login">Login</BlueNavLink>
       )}
-      {isFullScreen && (
-        <>
-          <CloseButton onClick={handleCloseClick}>Close</CloseButton>
-          <div>
-            <h1>About Us</h1>
-            <p>Information about the vendor and the application.</p>
-          </div>
-        </>
-      )}
-      <button>Logout</button>
     </Nav>
   );
 };
 
 export default NavBar;
-
-
-
-// import React, { useState } from 'react';
-// import { Link } from 'react-router-dom';
-// import styled from 'styled-components';
-
-// const Nav = styled.nav<{ isFullScreen: boolean }>`
-//   background-color: #333;
-//   color: #fff;
-//   padding: 1rem;
-//   display: flex;
-//   justify-content: space-between;
-//   flex-direction: ${({ isFullScreen }) => (isFullScreen ? 'column' : 'row')};
-//   position: ${({ isFullScreen }) => (isFullScreen ? 'fixed' : 'relative')};
-//   top: 0;
-//   left: 0;
-//   width: 100%;
-//   height: ${({ isFullScreen }) => (isFullScreen ? '100vh' : 'auto')};
-//   z-index: 1000;
-// `;
-
-// const NavLink = styled(Link)`
-//   color: #fff;
-//   text-decoration: none;
-//   margin-right: 1rem;
-
-//   &:hover {
-//     text-decoration: underline;
-//   }
-// `;
-
-// const CloseButton = styled.button`
-//   background-color: #d9534f;
-//   color: #fff;
-//   border: none;
-//   padding: 0.5rem 1rem;
-//   cursor: pointer;
-//   align-self: flex-end;
-
-//   &:hover {
-//     background-color: #c9302c;
-//   }
-// `;
-
-// const NavBar: React.FC = () => {
-//   const [isFullScreen, setIsFullScreen] = useState(false);
-
-//   const handleAboutClick = () => {
-//     setIsFullScreen(true);
-//   };
-
-//   const handleCloseClick = () => {
-//     setIsFullScreen(false);
-//   };
-
-//   return (
-//     <Nav isFullScreen={isFullScreen}>
-//       {!isFullScreen && (
-//         <>
-//           <NavLink to="/">Home</NavLink>
-//           <NavLink to="/about" onClick={handleAboutClick}>About</NavLink>
-//         </>
-//       )}
-//       {isFullScreen && (
-//         <>
-//           <CloseButton onClick={handleCloseClick}>Close</CloseButton>
-//           <div>
-//             <h1>About Us</h1>
-//             <p>Information about the vendor and the application.</p>
-//           </div>
-//         </>
-//       )}
-//       <button>Logout</button>
-//     </Nav>
-//   );
-// };
-
-// export default NavBar;

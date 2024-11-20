@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState} from "react";
 import axios from "axios";
 import {useProductStore} from "../store/useProductStore";
 import {Product} from "../types";
@@ -28,7 +28,7 @@ export function useProducts() {
         getTokenConfig()
       );
       setProducts(response.data);
-      console.log("Fetched Products:", response.data); // Debugging log
+      console.log("Fetched Products:", response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
       setError((error as Error).message);
@@ -49,7 +49,7 @@ export function useProducts() {
         ...prevProducts,
         response.data,
       ]);
-      console.log("Product Added:", response.data); // Debugging log
+      console.log("Product Added:", response.data);
     } catch (error) {
       console.error("Error adding product:", error);
       setError((error as Error).message);
@@ -69,7 +69,7 @@ export function useProducts() {
       setProducts((prevProducts: Product[]) =>
         prevProducts.map((p) => (p.id === productId ? response.data : p))
       );
-      console.log("Product Updated:", response.data); // Debugging log
+      console.log("Product Updated:", response.data);
     } catch (error) {
       console.error("Error updating product:", error);
       setError((error as Error).message);
@@ -88,7 +88,7 @@ export function useProducts() {
       setProducts((prevProducts: Product[]) =>
         prevProducts.filter((p) => p.id !== productId)
       );
-      console.log("Product Deleted:", productId); // Debugging log
+      console.log("Product Deleted:", productId);
     } catch (error) {
       console.error("Error deleting product:", error);
       setError((error as Error).message);
@@ -106,7 +106,7 @@ export function useProducts() {
         `${API_URL}/vendor/product/products/${productId}`,
         getTokenConfig()
       );
-      console.log("Fetched Product:", response.data); // Debugging log
+      console.log("Fetched Product:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -116,10 +116,6 @@ export function useProducts() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   return {
     products,
